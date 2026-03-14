@@ -30,7 +30,7 @@ const GlobalCollabMap: React.FC<{ department?: string; year?: string }> = ({ dep
         if (year && year !== 'all') params.set('year', year);
 
         const query = params.toString();
-        const url = `http://localhost:5001/api/insights/countries${query ? `?${query}` : ''}`;
+        const url = `https://srm-sp-production.up.railway.app/api/insights/countries${query ? `?${query}` : ''}`;
 
         fetch(url, { headers })
             .then(res => {

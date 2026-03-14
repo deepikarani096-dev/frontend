@@ -49,7 +49,7 @@ const CombinedSDGDashboard: React.FC<{ department?: string; year?: string }> = (
 
         const query = params.toString();
         // ✅ Correct endpoint: /api/insights/sdg-counts
-        const url = `http://localhost:5001/api/insights/sdg-counts${query ? `?${query}` : ''}`;
+        const url = `https://srm-sp-production.up.railway.app/api/insights/sdg-counts${query ? `?${query}` : ''}`;
 
         axios.get(url, { headers })
             .then(res => setData(res.data))

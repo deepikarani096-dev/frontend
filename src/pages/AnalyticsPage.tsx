@@ -59,7 +59,7 @@ const AnalyticsPage: React.FC = () => {
     const fetchDepartments = useCallback(async () => {
         try {
             const headers = getAuthHeaders();
-            const res  = await fetch('http://localhost:5001/api/faculty', { headers });
+            const res  = await fetch('https://srm-sp-production.up.railway.app/api/faculty', { headers });
             const data = await res.json();
             const unique = Array.from(new Set(
                 (Array.isArray(data) ? data : []).map((f: any) => f.department).filter(Boolean)
@@ -82,7 +82,7 @@ const AnalyticsPage: React.FC = () => {
             // 1. Fetch faculty list
             const params = new URLSearchParams();
             if (departmentFilter !== 'all') params.set('department', departmentFilter);
-            const facultyRes  = await fetch(`http://localhost:5001/api/faculty?${params}`, { headers });
+            const facultyRes  = await fetch(`https://srm-sp-production.up.railway.app/api/faculty?${params}`, { headers });
             const facultyList: FacultyBasic[] = await facultyRes.json();
 
             if (!Array.isArray(facultyList) || facultyList.length === 0) {
@@ -100,7 +100,7 @@ const AnalyticsPage: React.FC = () => {
                         const csParams = new URLSearchParams();
                         if (yearFilter !== 'all') csParams.set('year', yearFilter);
                         const cRes = await fetch(
-                            `http://localhost:5001/api/faculty/${fid}/country-stats?${csParams}`,
+                            `https://srm-sp-production.up.railway.app/api/faculty/${fid}/country-stats?${csParams}`,
                             { headers }
                         );
                         if (!cRes.ok) return { ...f, countryStats: [] };
