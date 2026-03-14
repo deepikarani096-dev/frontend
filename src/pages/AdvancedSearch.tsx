@@ -71,8 +71,8 @@ const AdvancedSearch: React.FC = () => {
     try {
       const headers = getAuthHeaders();
       const [sdgRes, domainRes] = await Promise.all([
-        axios.get('http://localhost:5001/api/sdg/list', { headers }),
-        axios.get('http://localhost:5001/api/insights/domains', { headers }),
+        axios.get('https://srm-sp-production.up.railway.app/api/sdg/list', { headers }),
+        axios.get('https://srm-sp-production.up.railway.app/api/insights/domains', { headers }),
       ]);
       setSDGs(sdgRes.data || []);
       setDomains(domainRes.data || []);
@@ -84,7 +84,7 @@ const AdvancedSearch: React.FC = () => {
   const fetchDepartments = async () => {
     try {
       const headers = getAuthHeaders();
-      const res = await axios.get('http://localhost:5001/api/faculty', { headers });
+      const res = await axios.get('https://srm-sp-production.up.railway.app/api/faculty', { headers });
       const faculties = Array.isArray(res.data) ? res.data : [];
       const unique = Array.from(new Set(faculties.map((f: any) => f.department).filter(Boolean)));
       setDepartments(unique);
@@ -123,7 +123,7 @@ const AdvancedSearch: React.FC = () => {
         params.append('department', departmentFilter);
       }
       const headers = getAuthHeaders();
-      const response = await axios.get(`http://localhost:5001/api/search/advanced?${params.toString()}`, { headers });
+      const response = await axios.get(`https://srm-sp-production.up.railway.app/api/search/advanced?${params.toString()}`, { headers });
 
       if (response.data.success) {
         setResults(response.data.results || []);

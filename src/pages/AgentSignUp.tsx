@@ -48,7 +48,7 @@ const AgentSignUp: React.FC = () => {
     if (Object.keys(newErrors).length === 0) {
       setIsSubmitting(true);
       try {
-        const response = await fetch("http://localhost:5001/admin/submit-author-for-approval", {
+        const response = await fetch("https://srm-sp-production.up.railway.app/admin/submit-author-for-approval", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -78,7 +78,7 @@ export default function QuartileReportPage() {
 
     const fetchDepartments = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/api/faculty", { headers: getAuthHeaders() });
+            const res = await axios.get("https://srm-sp-production.up.railway.app/api/faculty", { headers: getAuthHeaders() });
             const faculties = Array.isArray(res.data) ? res.data : [];
             setDepartments(Array.from(new Set(faculties.map((f: any) => f.department).filter(Boolean))));
         } catch (err) { console.error("Failed to fetch departments:", err); }
@@ -87,7 +87,7 @@ export default function QuartileReportPage() {
     const fetchQuartileReport = async () => {
         setLoading(true); setError("");
         try {
-            let url = `http://localhost:5001/api/faculty/quartile-report/data?year=${year}&quartile=${quartile}`;
+            let url = `https://srm-sp-production.up.railway.app/api/faculty/quartile-report/data?year=${year}&quartile=${quartile}`;
             if (isAdmin && isAdmin() && departmentFilter && departmentFilter !== "all")
                 url += `&department=${encodeURIComponent(departmentFilter)}`;
             const res = await axios.get(url, { headers: getAuthHeaders() });
@@ -101,7 +101,7 @@ export default function QuartileReportPage() {
 
     const fetchSummaryStats = async () => {
         try {
-            let url = "http://localhost:5001/api/faculty/quartile-report/summary-stats";
+            let url = "https://srm-sp-production.up.railway.app/api/faculty/quartile-report/summary-stats";
             if (isAdmin && isAdmin() && departmentFilter && departmentFilter !== "all")
                 url += `?department=${encodeURIComponent(departmentFilter)}`;
             const res = await axios.get(url, { headers: getAuthHeaders() });

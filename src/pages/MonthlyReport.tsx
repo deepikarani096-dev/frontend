@@ -151,7 +151,7 @@ export default function MonthlyReport() {
         setLoading(true);
         try {
             const headers = getAuthHeaders();
-            let url = "http://localhost:5001/api/monthly-report-with-papers";
+            let url = "https://srm-sp-production.up.railway.app/api/monthly-report-with-papers";
             const effectiveDept = typeof dept !== "undefined" ? dept : departmentFilter;
             if (isAdmin && isAdmin() && effectiveDept && effectiveDept !== "all") {
                 url += `?department=${encodeURIComponent(effectiveDept)}`;
@@ -209,7 +209,7 @@ export default function MonthlyReport() {
     const fetchDepartments = async () => {
         try {
             const headers = getAuthHeaders();
-            const res = await axios.get("http://localhost:5001/api/faculty", { headers });
+            const res = await axios.get("https://srm-sp-production.up.railway.app/api/faculty", { headers });
             const faculties = Array.isArray(res.data) ? res.data : [];
             const unique = Array.from(new Set(faculties.map((f: any) => f.department).filter(Boolean)));
             setDepartments(unique);

@@ -263,7 +263,7 @@ export default function AuthorPerformanceDetail() {
                 console.log("Fetching data for scopus_id:", scopus_id);
                 const headers = getAuthHeaders();
                 const res = await axios.get(
-                    `http://localhost:5001/api/faculty/author-performance/${scopus_id}`,
+                    `https://srm-sp-production.up.railway.app/api/faculty/author-performance/${scopus_id}`,
                     { headers }
                 );
                 console.log("Response data:", res.data);

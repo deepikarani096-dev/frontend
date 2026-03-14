@@ -53,7 +53,7 @@ export default function AuthorPerformance() {
             if (isAdmin && isAdmin() && departmentFilter && departmentFilter !== "all") {
                 params.department = departmentFilter;
             }
-            const res = await axios.get(`http://localhost:5001/api/faculty/author-list`, {
+            const res = await axios.get(`https://srm-sp-production.up.railway.app/api/faculty/author-list`, {
                 params,
                 headers,
             });
@@ -69,7 +69,7 @@ export default function AuthorPerformance() {
     const fetchDepartments = async () => {
         try {
             const headers = getAuthHeaders();
-            const res = await axios.get("http://localhost:5001/api/faculty", { headers });
+            const res = await axios.get("https://srm-sp-production.up.railway.app/api/faculty", { headers });
             const faculties = Array.isArray(res.data) ? res.data : [];
             const unique = Array.from(new Set(faculties.map((f: any) => f.department).filter(Boolean)));
             setDepartments(unique);

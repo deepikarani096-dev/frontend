@@ -171,7 +171,7 @@ const ReportsPage: React.FC = () => {
 
   const fetchPublicationMetrics = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/publication-metrics', {
+      const res = await axios.get('https://srm-sp-production.up.railway.app/api/publication-metrics', {
         headers: getAuthHeaders(),
       });
       setPublicationMetrics(res.data);

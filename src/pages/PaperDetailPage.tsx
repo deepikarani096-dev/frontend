@@ -68,7 +68,7 @@ const PaperDetailPage: React.FC = () => {
             try {
                 const encodedDOI = encodeURIComponent(doi || '');
                 const headers = getAuthHeaders();
-                const response = await axios.get(`http://localhost:5001/api/paper/${encodedDOI}`, { headers });
+                const response = await axios.get(`https://srm-sp-production.up.railway.app/api/paper/${encodedDOI}`, { headers });
                 setPaper(response.data.paper);
                 setInsights(response.data.insights);
             } catch (err) {

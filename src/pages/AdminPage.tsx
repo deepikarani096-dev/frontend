@@ -83,7 +83,7 @@ const AdminPage: React.FC = () => {
     // Add initial log
     setLogs([{ status: "INFO", message: "Starting Monthly Data Refresh...", time: new Date().toLocaleTimeString() }]);
 
-    const eventSource = new EventSource("http://localhost:5001/admin/run-refresh-stream");
+    const eventSource = new EventSource("https://srm-sp-production.up.railway.app/admin/run-refresh-stream");
 
     eventSource.onopen = () => {
       console.log("SSE connection established for Data Refresh");
@@ -127,7 +127,7 @@ const AdminPage: React.FC = () => {
     setModalOpen(true);
     setCurrentOperation("Scopus Scraping");
 
-    const eventSource = new EventSource("http://localhost:5001/admin/run-scopus-scraper");
+    const eventSource = new EventSource("https://srm-sp-production.up.railway.app/admin/run-scopus-scraper");
 
     eventSource.onmessage = (event) => {
       try {
@@ -187,7 +187,7 @@ const AdminPage: React.FC = () => {
     formData.append("file", quartileFile);
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:5001/admin/run-quartile-upload", true);
+    xhr.open("POST", "https://srm-sp-production.up.railway.app/admin/run-quartile-upload", true);
     xhr.setRequestHeader("Accept", "text/event-stream");
 
     xhr.onreadystatechange = () => {
@@ -237,7 +237,7 @@ const AdminPage: React.FC = () => {
     formData.append("file", scivalFile);
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:5001/admin/run-scival-upload", true);
+    xhr.open("POST", "https://srm-sp-production.up.railway.app/admin/run-scival-upload", true);
     xhr.setRequestHeader("Accept", "text/event-stream");
 
     xhr.onreadystatechange = () => {
@@ -332,7 +332,7 @@ const AdminPage: React.FC = () => {
     setAddingAuthor(true);
 
     try {
-      const response = await fetch("http://localhost:5001/admin/add-author", {
+      const response = await fetch("https://srm-sp-production.up.railway.app/admin/add-author", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -386,7 +386,7 @@ const AdminPage: React.FC = () => {
   const fetchPendingFaculties = async () => {
     setLoadingPendingFaculties(true);
     try {
-      const response = await fetch("http://localhost:5001/admin/pending-authors");
+      const response = await fetch("https://srm-sp-production.up.railway.app/admin/pending-authors");
       const result = await response.json();
       if (result.success) {
         setPendingFaculties(result.data || []);
@@ -401,7 +401,7 @@ const AdminPage: React.FC = () => {
   const handleApprovePendingFaculty = async (authorId: number, authorName: string) => {
     setApprovingAuthorId(authorId);
     try {
-      const response = await fetch(`http://localhost:5001/admin/approve-author/${authorId}`, {
+      const response = await fetch(`https://srm-sp-production.up.railway.app/admin/approve-author/${authorId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -441,7 +441,7 @@ const AdminPage: React.FC = () => {
 
     setRejectingAuthorId(rejectionAuthorData.id);
     try {
-      const response = await fetch(`http://localhost:5001/admin/reject-author/${rejectionAuthorData.id}`, {
+      const response = await fetch(`https://srm-sp-production.up.railway.app/admin/reject-author/${rejectionAuthorData.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

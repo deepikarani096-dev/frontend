@@ -164,7 +164,7 @@ const FacultyDetailPage: React.FC = () => {
       try {
         setLoading(true);
         const headers = getAuthHeaders();
-        const response = await axios.get(`http://localhost:5001/api/faculty/${id}`, {
+        const response = await axios.get(`https://srm-sp-production.up.railway.app/api/faculty/${id}`, {
           params: {
             sdg: sdgFilter !== "none" ? sdgFilter : undefined,
             domain: domainFilter !== "none" ? domainFilter : undefined,
@@ -178,7 +178,7 @@ const FacultyDetailPage: React.FC = () => {
         setFacultyData(response.data);
         if (!criteriaStartFilter && !criteriaEndFilter) {
           try {
-            const quartRes = await axios.get(`http://localhost:5001/api/faculty/${id}/quartile-summary`, { headers: getAuthHeaders() });
+            const quartRes = await axios.get(`https://srm-sp-production.up.railway.app/api/faculty/${id}/quartile-summary`, { headers: getAuthHeaders() });
             const summaryData = quartRes.data || {};
             setQuartileSummaryAllYears(summaryData);
             const allYears = Object.keys(summaryData);
@@ -198,7 +198,7 @@ const FacultyDetailPage: React.FC = () => {
       if (!id) return;
       if (criteriaStartFilter && criteriaEndFilter) { setTypeCounts(null); return; }
       try {
-        const response = await axios.get(`http://localhost:5001/api/faculty/${id}/type-count`, {
+        const response = await axios.get(`https://srm-sp-production.up.railway.app/api/faculty/${id}/type-count`, {
           params: {
             sdg: sdgFilter !== "none" ? sdgFilter : undefined,
             domain: domainFilter !== "none" ? domainFilter : undefined,
@@ -216,7 +216,7 @@ const FacultyDetailPage: React.FC = () => {
     const fetchCountryStats = async () => {
       if (!id) return;
       try {
-        const res = await axios.get(`http://localhost:5001/api/faculty/${id}/country-stats`, { headers: getAuthHeaders() });
+        const res = await axios.get(`https://srm-sp-production.up.railway.app/api/faculty/${id}/country-stats`, { headers: getAuthHeaders() });
         setCountryStats(res.data || []);
       } catch (err) { setCountryStats([]); }
     };
@@ -307,8 +307,8 @@ const FacultyDetailPage: React.FC = () => {
       try {
         // Highcharts is already imported at top of file
         let res;
-        try { res = await axios.get(`http://localhost:5001/api/faculty/${id}/author-performance`, fullHistory ? { params: { full: 'true' } } : {}); }
-        catch { res = await axios.get(`http://localhost:5001/api/faculty/author-performance/${id}`, fullHistory ? { params: { full: 'true' } } : {}); }
+        try { res = await axios.get(`https://srm-sp-production.up.railway.app/api/faculty/${id}/author-performance`, fullHistory ? { params: { full: 'true' } } : {}); }
+        catch { res = await axios.get(`https://srm-sp-production.up.railway.app/api/faculty/author-performance/${id}`, fullHistory ? { params: { full: 'true' } } : {}); }
 
         const data: ChartDataPoint[] = res.data?.chart_data || [];
         setChartData(data);

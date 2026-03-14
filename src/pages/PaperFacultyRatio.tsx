@@ -524,7 +524,7 @@ export default function PaperFacultyRatio() {
     const buildUrl = (year: number, dept: string) => {
         // HoD: always force their department
         const effectiveDept = isHoD ? hodDept : dept;
-        let url = `http://localhost:5001/api/paper-faculty-ratio?year=${year}`;
+        let url = `https://srm-sp-production.up.railway.app/api/paper-faculty-ratio?year=${year}`;
         if (effectiveDept && effectiveDept !== "all") {
             url += `&department=${encodeURIComponent(effectiveDept)}`;
         }
@@ -535,7 +535,7 @@ export default function PaperFacultyRatio() {
     const fetchDepartments = async () => {
         try {
             const headers = getAuthHeaders();
-            const res = await axios.get("http://localhost:5001/api/paper-faculty-ratio/departments", { headers });
+            const res = await axios.get("https://srm-sp-production.up.railway.app/api/paper-faculty-ratio/departments", { headers });
             return Array.isArray(res.data) ? res.data as string[] : [];
         } catch { return []; }
     };
@@ -563,7 +563,7 @@ export default function PaperFacultyRatio() {
         const stats: DeptStat[] = [];
         for (const dept of deptList) {
             try {
-                const url = `http://localhost:5001/api/paper-faculty-ratio?year=${year}&department=${encodeURIComponent(dept)}`;
+                const url = `https://srm-sp-production.up.railway.app/api/paper-faculty-ratio?year=${year}&department=${encodeURIComponent(dept)}`;
                 const res = await axios.get<RatioResponse>(url, { headers });
                 stats.push({ department: dept, faculty: res.data.totalFaculty, papers: res.data.totalPapers, ratio: res.data.ratio });
             } catch { /* skip failed dept */ }

@@ -100,7 +100,7 @@ export default function PublicationStats() {
             }
             const headers = getAuthHeaders();
             const res = await axios.get(
-                `http://localhost:5001/api/publication-stats?${params.toString()}`,
+                `https://srm-sp-production.up.railway.app/api/publication-stats?${params.toString()}`,
                 { headers }
             );
             setPublications(res.data);
@@ -115,7 +115,7 @@ export default function PublicationStats() {
     const fetchDepartments = async () => {
         try {
             const headers = getAuthHeaders();
-            const res = await axios.get("http://localhost:5001/api/faculty", { headers });
+            const res = await axios.get("https://srm-sp-production.up.railway.app/api/faculty", { headers });
             const faculties = Array.isArray(res.data) ? res.data : [];
             const unique = Array.from(
                 new Set(faculties.map((f: any) => f.department).filter(Boolean))
@@ -148,7 +148,7 @@ export default function PublicationStats() {
 
             const headers = getAuthHeaders();
             const res = await axios.get(
-                `http://localhost:5001/api/publication-papers?${params.toString()}`,
+                `https://srm-sp-production.up.railway.app/api/publication-papers?${params.toString()}`,
                 { headers }
             );
             setPapersModal((prev) => ({

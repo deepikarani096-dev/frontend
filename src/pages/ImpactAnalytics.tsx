@@ -34,7 +34,7 @@ const ImpactAnalytics: React.FC = () => {
     setLoading(true);
     try {
       const headers = getAuthHeaders();
-      let url = `http://localhost:5001/api/impact-analytics`;
+      let url = `https://srm-sp-production.up.railway.app/api/impact-analytics`;
       if (isAdmin && isAdmin() && dept !== 'all') url += `?department=${encodeURIComponent(dept)}`;
       const res = await axios.get(url, { headers });
       setData(res.data);
@@ -49,7 +49,7 @@ const ImpactAnalytics: React.FC = () => {
   const fetchDepartments = async () => {
     try {
       const headers = getAuthHeaders();
-      const res = await axios.get('http://localhost:5001/api/impact-analytics/departments', { headers });
+      const res = await axios.get('https://srm-sp-production.up.railway.app/api/impact-analytics/departments', { headers });
       setDeptList(res.data.departments || []);
     } catch (err) {
       console.error('Failed to fetch departments', err);
@@ -60,7 +60,7 @@ const ImpactAnalytics: React.FC = () => {
   const fetchAdvanced = async () => {
     try {
       const headers = getAuthHeaders();
-      let url = `http://localhost:5001/api/impact-analytics/advanced`;
+      let url = `https://srm-sp-production.up.railway.app/api/impact-analytics/advanced`;
       if (isAdmin && isAdmin() && dept !== 'all') url += `?department=${encodeURIComponent(dept)}`;
       const res = await axios.get(url, { headers });
       setAdvanced(res.data);
