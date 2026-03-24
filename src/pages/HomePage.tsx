@@ -134,7 +134,7 @@ const FacultyLandingPage = () => {
 
     useEffect(() => {
         const headers = getAuthHeaders();
-        axios.get('http://localhost:5001/api/homepage-stats', { headers })
+        axios.get('https://srm-sp-production.up.railway.app/api/homepage-stats', { headers })
             .then(({ data }) => {
                 if (data.departmentStats && data.departmentStats.length > 0) {
                     setDepartmentStats(data.departmentStats);
