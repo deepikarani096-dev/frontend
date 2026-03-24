@@ -18,6 +18,18 @@ interface TopAuthor {
   name: string;
   total_docs?: number;
   timeframe_docs: number;
+
+  journal_count?: number;
+  conference_count?: number;
+  book_count?: number;
+
+  q1_count?: number;
+  q2_count?: number;
+  q3_count?: number;
+  q4_count?: number;
+
+  high_if_count?: number;
+  mid_if_count?: number;
 }
 
 interface QuartileData {
@@ -44,37 +56,59 @@ export default function ResearchDashboard() {
   const [departments, setDepartments] = useState<string[]>([]);
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [hoveredQuartile, setHoveredQuartile] = useState<string | null>(null);
+  const [expandedAuthor, setExpandedAuthor] = useState<string | null>(null);
 
   // Fetch Top Authors
   const fetchTopAuthors = async (selectedTimeframe: string) => {
     try {
       const headers = getAuthHeaders();
-      let url = `https://srm-sp-production.up.railway.app/api/top-author?timeframe=${selectedTimeframe}`;
+      let url = `http://localhost:5001/api/top-author?timeframe=${selectedTimeframe}`;
+
       if (isAdmin() && departmentFilter && departmentFilter !== 'all') {
         url += `&department=${encodeURIComponent(departmentFilter)}`;
       }
+
       const res = await axios.get(url, { headers });
       const data = res.data;
+
       let authors: TopAuthor[] = [];
+
       if (!data) {
         authors = [];
       } else if (Array.isArray(data)) {
         authors = data.map((a: any) => ({
           faculty_id: a.faculty_id,
           scopus_id: a.scopus_id,
-          name: a.faculty_name || a.name || 'Unknown',
-          total_docs: a.total_docs || a.docs_count || 0,
-          timeframe_docs: a.timeframe_docs || a.timeframe_docs || 0,
+          name: a.faculty_name || 'Unknown',
+          timeframe_docs: a.total_score || 0,
+          journal_count: a.journal_count || 0,
+          conference_count: a.conference_count || 0,
+          book_count: a.book_count || 0,
+          q1_count: a.q1_count || 0,
+          q2_count: a.q2_count || 0,
+          q3_count: a.q3_count || 0,
+          q4_count: a.q4_count || 0,
+          high_if_count: a.high_if_count || 0,
+          mid_if_count: a.mid_if_count || 0,
         }));
       } else if (typeof data === 'object') {
         authors = [{
           faculty_id: data.faculty_id,
           scopus_id: data.scopus_id,
-          name: data.faculty_name || data.name || 'Unknown',
-          total_docs: data.total_docs || data.docs_count || 0,
-          timeframe_docs: data.timeframe_docs || data.timeframe_docs || 0,
+          name: data.faculty_name || 'Unknown',
+          timeframe_docs: data.total_score || 0,
+          journal_count: data.journal_count || 0,
+          conference_count: data.conference_count || 0,
+          book_count: data.book_count || 0,
+          q1_count: data.q1_count || 0,
+          q2_count: data.q2_count || 0,
+          q3_count: data.q3_count || 0,
+          q4_count: data.q4_count || 0,
+          high_if_count: data.high_if_count || 0,
+          mid_if_count: data.mid_if_count || 0,
         }];
       }
+
       setTopAuthors(authors);
     } catch (error) {
       console.error("Error fetching top authors:", error);
@@ -86,7 +120,7 @@ export default function ResearchDashboard() {
   const fetchData = async (selectedTimeframe: string) => {
     try {
       const headers = getAuthHeaders();
-      let url = `https://srm-sp-production.up.railway.app/api/publications?timeframe=${selectedTimeframe}`;
+      let url = `http://localhost:5001/api/publications?timeframe=${selectedTimeframe}`;
       if (isAdmin() && departmentFilter && departmentFilter !== 'all') {
         url += `&department=${encodeURIComponent(departmentFilter)}`;
       }
@@ -105,8 +139,8 @@ export default function ResearchDashboard() {
       const headers = getAuthHeaders();
       const url =
         selectedYear === "all"
-          ? `https://srm-sp-production.up.railway.app/api/quartile-stats${isAdmin() && departmentFilter && departmentFilter !== 'all' ? `?department=${encodeURIComponent(departmentFilter)}` : ''}`
-          : `https://srm-sp-production.up.railway.app/api/quartile-stats?year=${selectedYear}${isAdmin() && departmentFilter && departmentFilter !== 'all' ? `&department=${encodeURIComponent(departmentFilter)}` : ''}`;
+          ? `http://localhost:5001/api/quartile-stats${isAdmin() && departmentFilter && departmentFilter !== 'all' ? `?department=${encodeURIComponent(departmentFilter)}` : ''}`
+          : `http://localhost:5001/api/quartile-stats?year=${selectedYear}${isAdmin() && departmentFilter && departmentFilter !== 'all' ? `&department=${encodeURIComponent(departmentFilter)}` : ''}`;
       const res = await axios.get(url, { headers });
       setQuartiles(res.data);
     } catch (error) {
@@ -114,11 +148,11 @@ export default function ResearchDashboard() {
     }
   };
 
-  // Fetch list of departments (from faculty list) for admin filter
+  // Fetch list of departments for admin filter
   const fetchDepartments = async () => {
     try {
       const headers = getAuthHeaders();
-      const res = await axios.get('https://srm-sp-production.up.railway.app/api/faculty', { headers });
+      const res = await axios.get('http://localhost:5001/api/faculty', { headers });
       const faculties = Array.isArray(res.data) ? res.data : [];
       const unique = Array.from(new Set(faculties.map((f: any) => f.department).filter(Boolean)));
       setDepartments(unique);
@@ -211,8 +245,144 @@ export default function ResearchDashboard() {
     animateQuartiles(quartiles);
   }, [quartiles]);
 
+  // Find the author whose breakdown modal is open
+  const modalAuthor = expandedAuthor !== null
+    ? topAuthors.find((a, i) => (a.faculty_id || a.scopus_id || i.toString()) === expandedAuthor) ?? null
+    : null;
+
   return (
     <div className={style.pageWrapper}>
+
+      {/* ── SCORE BREAKDOWN MODAL ── */}
+      {modalAuthor && (
+        <div
+          onClick={() => setExpandedAuthor(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.45)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            animation: "fadeIn 0.15s ease",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "#fff",
+              borderRadius: "14px",
+              padding: "1.5rem 1.75rem",
+              width: "340px",
+              maxWidth: "92vw",
+              boxShadow: "0 12px 40px rgba(0,0,0,0.22)",
+              animation: "slideUp 0.2s ease",
+            }}
+          >
+            {/* Modal header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+              <strong style={{ color: "#1A4D6C", fontSize: "16px" }}>{modalAuthor.name}</strong>
+              <button
+                onClick={() => setExpandedAuthor(null)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "20px",
+                  color: "#888",
+                  lineHeight: 1,
+                  padding: "2px 6px",
+                  borderRadius: "6px",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <strong style={{ color: "#1A4D6C", fontSize: "14px" }}>Score Breakdown</strong>
+
+            {/* Publication Type */}
+            <p style={{ margin: "10px 0 4px", fontSize: "12px", fontWeight: 600, color: "#888", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Publication Type
+            </p>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Journal (×3)</span>
+              <span style={valueStyle}>{modalAuthor.journal_count} × 3 = <b>{modalAuthor.journal_count! * 3}</b></span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Conference (×1)</span>
+              <span style={valueStyle}>{modalAuthor.conference_count} × 1 = <b>{modalAuthor.conference_count! * 1}</b></span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Book (×2)</span>
+              <span style={valueStyle}>{modalAuthor.book_count} × 2 = <b>{modalAuthor.book_count! * 2}</b></span>
+            </div>
+
+            <hr style={dividerStyle} />
+
+            {/* Quartile */}
+            <p style={{ margin: "0 0 4px", fontSize: "12px", fontWeight: 600, color: "#888", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Quartile
+            </p>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Q1 (×4)</span>
+              <span style={valueStyle}>{modalAuthor.q1_count} × 4 = <b>{modalAuthor.q1_count! * 4}</b></span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Q2 (×3)</span>
+              <span style={valueStyle}>{modalAuthor.q2_count} × 3 = <b>{modalAuthor.q2_count! * 3}</b></span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Q3 (×2)</span>
+              <span style={valueStyle}>{modalAuthor.q3_count} × 2 = <b>{modalAuthor.q3_count! * 2}</b></span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Q4 (×1)</span>
+              <span style={valueStyle}>{modalAuthor.q4_count} × 1 = <b>{modalAuthor.q4_count! * 1}</b></span>
+            </div>
+
+            <hr style={dividerStyle} />
+
+            {/* Impact Factor */}
+            <p style={{ margin: "0 0 4px", fontSize: "12px", fontWeight: 600, color: "#888", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Impact Factor
+            </p>
+            <div style={rowStyle}>
+              <span style={labelStyle}>High IF (&gt;7) (×5)</span>
+              <span style={valueStyle}>{modalAuthor.high_if_count} × 5 = <b>{modalAuthor.high_if_count! * 5}</b></span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Mid IF (3–7) (×3)</span>
+              <span style={valueStyle}>{modalAuthor.mid_if_count} × 3 = <b>{modalAuthor.mid_if_count! * 3}</b></span>
+            </div>
+
+            <hr style={dividerStyle} />
+
+            {/* Total */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <strong style={{ color: "#1A4D6C", fontSize: "15px" }}>Total Score</strong>
+              <span style={{
+                background: "#1A4D6C",
+                color: "#fff",
+                padding: "4px 14px",
+                borderRadius: "20px",
+                fontWeight: 700,
+                fontSize: "15px",
+              }}>
+                {modalAuthor.timeframe_docs}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Keyframe styles injected once */}
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes slideUp { from { transform: translateY(18px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+      `}</style>
+
       <div className="shared-navbar">
         <a className="shared-logo">
           <img src={srmLogo} alt="SRM Logo" className={style.navLogo} />
@@ -359,12 +529,20 @@ export default function ResearchDashboard() {
           <h3>Top Authors</h3>
           <div className={style.authorList}>
             {topAuthors.length > 0 ? (
-              topAuthors.map((author, index) => (
-                <div key={`${author.faculty_id || author.scopus_id || index}`} className={style.authorChip}>
-                  {author.name || 'Unknown'}
-                  <span className={style.authorBadge}>{author.timeframe_docs ?? 0}</span>
-                </div>
-              ))
+              topAuthors.map((author, index) => {
+                const id = author.faculty_id || author.scopus_id || index.toString();
+                return (
+                  <div
+                    key={id}
+                    className={style.authorChip}
+                    onClick={() => setExpandedAuthor(expandedAuthor === id ? null : id)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {author.name}
+                    <span className={style.authorBadge}>{author.timeframe_docs}</span>
+                  </div>
+                );
+              })
             ) : (
               <p style={{ color: "#777" }}>No data available</p>
             )}
@@ -453,3 +631,26 @@ export default function ResearchDashboard() {
     </div>
   );
 }
+
+// Shared inline styles for modal rows
+const rowStyle: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "space-between",
+  fontSize: "13px",
+  padding: "3px 0",
+  color: "#333",
+};
+
+const labelStyle: React.CSSProperties = {
+  color: "#666",
+};
+
+const valueStyle: React.CSSProperties = {
+  color: "#1A4D6C",
+};
+
+const dividerStyle: React.CSSProperties = {
+  border: "none",
+  borderTop: "1px solid #eee",
+  margin: "10px 0",
+};
