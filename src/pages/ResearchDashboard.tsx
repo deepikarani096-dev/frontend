@@ -62,7 +62,7 @@ export default function ResearchDashboard() {
   const fetchTopAuthors = async (selectedTimeframe: string) => {
     try {
       const headers = getAuthHeaders();
-      let url = `http://localhost:5001/api/top-author?timeframe=${selectedTimeframe}`;
+      let url = `https://srm-sp-production.up.railway.app/api/top-author?timeframe=${selectedTimeframe}`;
 
       if (isAdmin() && departmentFilter && departmentFilter !== 'all') {
         url += `&department=${encodeURIComponent(departmentFilter)}`;
@@ -120,7 +120,7 @@ export default function ResearchDashboard() {
   const fetchData = async (selectedTimeframe: string) => {
     try {
       const headers = getAuthHeaders();
-      let url = `http://localhost:5001/api/publications?timeframe=${selectedTimeframe}`;
+      let url = `https://srm-sp-production.up.railway.app/api/publications?timeframe=${selectedTimeframe}`;
       if (isAdmin() && departmentFilter && departmentFilter !== 'all') {
         url += `&department=${encodeURIComponent(departmentFilter)}`;
       }
@@ -139,8 +139,8 @@ export default function ResearchDashboard() {
       const headers = getAuthHeaders();
       const url =
         selectedYear === "all"
-          ? `http://localhost:5001/api/quartile-stats${isAdmin() && departmentFilter && departmentFilter !== 'all' ? `?department=${encodeURIComponent(departmentFilter)}` : ''}`
-          : `http://localhost:5001/api/quartile-stats?year=${selectedYear}${isAdmin() && departmentFilter && departmentFilter !== 'all' ? `&department=${encodeURIComponent(departmentFilter)}` : ''}`;
+          ? `https://srm-sp-production.up.railway.app/api/quartile-stats${isAdmin() && departmentFilter && departmentFilter !== 'all' ? `?department=${encodeURIComponent(departmentFilter)}` : ''}`
+          : `https://srm-sp-production.up.railway.app/api/quartile-stats?year=${selectedYear}${isAdmin() && departmentFilter && departmentFilter !== 'all' ? `&department=${encodeURIComponent(departmentFilter)}` : ''}`;
       const res = await axios.get(url, { headers });
       setQuartiles(res.data);
     } catch (error) {
@@ -152,7 +152,7 @@ export default function ResearchDashboard() {
   const fetchDepartments = async () => {
     try {
       const headers = getAuthHeaders();
-      const res = await axios.get('http://localhost:5001/api/faculty', { headers });
+      const res = await axios.get('https://srm-sp-production.up.railway.app/api/faculty', { headers });
       const faculties = Array.isArray(res.data) ? res.data : [];
       const unique = Array.from(new Set(faculties.map((f: any) => f.department).filter(Boolean)));
       setDepartments(unique);
