@@ -20,6 +20,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicationStats from './pages/PublicationStats';
 import PaperFacultyRatio from './pages/PaperFacultyRatio';
 import QuartileReportPage from './pages/QuartileReportPage';
+import PublicationTypesDashboard from "./pages/PublicationTypesDashboard";
 
 
 const App: React.FC = () => {
@@ -54,6 +55,16 @@ const App: React.FC = () => {
         element={
           <ProtectedRoute requiredLevels={[1, 2]}>
             <PublicationStats />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Publication Types Dashboard - admin and full-access faculty only */}
+      <Route
+        path="/publication-types"
+        element={
+          <ProtectedRoute requiredLevels={[1, 2]}>
+            <PublicationTypesDashboard />
           </ProtectedRoute>
         }
       />
